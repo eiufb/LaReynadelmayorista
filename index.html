@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Reina del Mayorista - Tu Proveedor de Confianza</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de Iconos (Font Awesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Configuración de Tailwind y Fuente Inter -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Fondo gris claro */
+        }
+        .product-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .whatsapp-button {
+            background: linear-gradient(135deg, #128C7E 0%, #25D366 100%);
+            transition: all 0.3s ease;
+        }
+        .whatsapp-button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header y Banner Principal -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-teal-600 tracking-tight">
+                La Reina del Mayorista
+            </h1>
+            <nav class="mt-4 md:mt-0 space-x-4">
+                <a href="#productos" class="text-gray-600 hover:text-teal-700 font-medium transition duration-150">Productos</a>
+                <a href="#carrito" class="text-gray-600 hover:text-teal-700 font-medium transition duration-150">Mi Carrito</a>
+                <!-- Iconos de Redes Sociales -->
+                <a href="https://www.facebook.com/profile.php?id=61556660211508&mibextid=ZbWKwL" target="_blank" class="text-blue-600 hover:text-blue-800 transition duration-150" aria-label="Facebook">
+                    <i class="fab fa-facebook-square text-xl"></i>
+                </a>
+                <a href="https://instagram.com/lareynadelmayorista/?igsh=MWk5Zm9vZzJuaDZkYw%3D%3D" target="_blank" class="text-pink-600 hover:text-pink-800 transition duration-150" aria-label="Instagram">
+                    <i class="fab fa-instagram text-xl"></i>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sección de Propuesta de Valor -->
+    <section class="bg-teal-500 text-white p-6 md:p-10 shadow-inner">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="text-2xl md:text-3xl font-bold mb-3">Tu Mejor Socio Mayorista en Villa Carlos Paz</h2>
+            <p class="text-lg md:text-xl mb-4">
+                Somos el mejor proveedor para emprendedores y mayoristas para locales.
+            </p>
+            <ul class="list-none flex flex-wrap justify-center space-y-2 md:space-y-0 md:space-x-8 text-left md:text-center">
+                <li class="flex items-center w-full md:w-auto">
+                    <i class="fas fa-truck text-xl mr-2"></i>
+                    Envíos GRATIS dentro de Villa Carlos Paz.
+                </li>
+                <li class="flex items-center w-full md:w-auto">
+                    <i class="fas fa-handshake text-xl mr-2"></i>
+                    Zonas aledañas: Coordinación para encuentros.
+                </li>
+                <li class="flex items-center w-full md:w-auto">
+                    <i class="fas fa-cash-register text-xl mr-2"></i>
+                    Pago al recibir conforme (¡No pedimos dinero antes de la entrega!).
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Contenido Principal: Productos y Carrito -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+        <!-- Columna de Productos -->
+        <div class="lg:col-span-3">
+            <h2 id="productos" class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Catálogo de Productos Mayoristas</h2>
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Las tarjetas de productos se renderizarán aquí -->
+            </div>
+        </div>
+
+        <!-- Columna Fija del Carrito de Compras -->
+        <div id="carrito" class="lg:col-span-1 sticky top-28 h-fit">
+            <div class="bg-white p-5 rounded-xl shadow-xl border border-gray-100">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-shopping-cart mr-2 text-teal-600"></i> Mi Pedido
+                </h3>
+
+                <div id="cart-items" class="space-y-3 mb-6 min-h-[50px]">
+                    <p class="text-gray-500 text-center" id="empty-cart-message">El carrito está vacío.</p>
+                </div>
+
+                <!-- Resumen de Totales -->
+                <div class="pt-4 border-t border-gray-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-lg font-semibold text-gray-700">Total:</span>
+                        <span id="cart-total" class="text-2xl font-extrabold text-teal-600">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Botón de Finalizar Pedido por WhatsApp -->
+                <button onclick="checkoutToWhatsApp()"
+                        id="checkout-button"
+                        class="whatsapp-button w-full text-white font-bold py-3 px-4 rounded-lg shadow-md mt-4 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                    <i class="fab fa-whatsapp text-2xl mr-3"></i>
+                    Finalizar Pedido (WhatsApp)
+                </button>
+                <div id="loading-spinner" class="hidden text-center mt-3">
+                    <i class="fas fa-spinner fa-spin text-teal-600 text-xl"></i> Generando enlace...
+                </div>
+                <div id="message-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-[99]">
+                    <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full">
+                        <h4 class="text-xl font-bold mb-3 text-teal-600">¡Pedido Enviado!</h4>
+                        <p id="modal-text" class="text-gray-700 mb-4">Serás redirigido a WhatsApp con el resumen de tu pedido.</p>
+                        <button onclick="document.getElementById('message-modal').classList.add('hidden')" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg w-full">Entendido</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-6 mt-10">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2025 La Reina del Mayorista. Todos los derechos reservados.</p>
+            <p class="text-sm mt-1">Proveedor líder en Villa Carlos Paz para locales y emprendedores.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Variables Globales ---
+        const cart = {}; // { productId: quantity }
+        const DB = {
+            // Número de WhatsApp (Formato internacional sin el '+' y sin espacios)
+            WHATSAPP_NUMBER: '5493541586088', // +54 9 3541 58-6088
+            // Productos actualizados (simulando una base de datos)
+            PRODUCTS: [
+                { id: 1, nombre: "Lote de 50 Relojes de Pulsera", descripcion: "Modelos variados, mallas de cuero sintético y metálicas. Surtido clásico y moderno.", precioMayorista: 18500.00, imagen: "https://placehold.co/400x300/3498db/FFFFFF?text=Relojes+Surtidos" },
+                { id: 2, nombre: "Power Banks 10000mAh (Pack x10)", descripcion: "Baterías portátiles de alta capacidad, carga rápida USB-C. Certificación CE.", precioMayorista: 21000.00, imagen: "https://placehold.co/400x300/e67e22/FFFFFF?text=Power+Bank" },
+                { id: 3, nombre: "Sets de 6 Velas Aromáticas Premium", descripcion: "Pack de 5 sets de velas de soja con esencias de lujo. Ideal para decoración y regalos.", precioMayorista: 9800.00, imagen: "https://placehold.co/400x300/f1c40f/000000?text=Velas+Arom%C3%A1ticas" },
+                { id: 4, nombre: "40 Billeteras de Cuero Ecológico", descripcion: "Modelos slim, con compartimentos para tarjetas y billetes. Colores neutros y vivos.", precioMayorista: 15500.00, imagen: "https://placehold.co/400x300/9b59b6/FFFFFF?text=Billeteras+Eco" },
+                { id: 5, nombre: "Exfoliantes Faciales de Carbón (Caja x24)", descripcion: "Cosmética natural. Limpieza profunda y detox. Envases de 150ml.", precioMayorista: 11200.00, imagen: "https://placehold.co/400x300/e74c3c/FFFFFF?text=Cosm%C3%A9tica+Carb%C3%B3n" },
+                { id: 6, nombre: "Lotes de 15 Muñecos de Peluche Grandes", descripcion: "Animales de la selva y personajes infantiles. 40cm de altura promedio. Hipoalergénicos.", precioMayorista: 25000.00, imagen: "https://placehold.co/400x300/2ecc71/FFFFFF?text=Peluche+Infantil" },
+                { id: 7, nombre: "Bandas Elásticas de Resistencia (Set x20)", descripcion: "Set de 5 niveles de resistencia por banda. Incluye bolsa de transporte. Ideal fitness.", precioMayorista: 7500.00, imagen: "https://placehold.co/400x300/1abc9c/FFFFFF?text=Bandas+Fitness" },
+                { id: 8, nombre: "Gargantillas de Plata 925 (Pack x30)", descripcion: "Diseños minimalistas y cadenas finas. Hipoalergénicas, con garantía de pureza.", precioMayorista: 19800.00, imagen: "https://placehold.co/400x300/7f8c8d/FFFFFF?text=Plata+925" },
+                { id: 9, nombre: "100 Lápices de Colores Profesionales", descripcion: "Caja metálica de 50 colores cada uno. Mina suave, alta pigmentación. Ideal arte y librería.", precioMayorista: 14000.00, imagen: "https://placehold.co/400x300/c0392b/FFFFFF?text=L%C3%A1pices+Arte" },
+                { id: 10, nombre: "Sets de 12 Utensilios de Bambú (Pack x8)", descripcion: "Para cocina, incluye cucharas, espátulas y pinzas. Ecológico y duradero.", precioMayorista: 10500.00, imagen: "https://placehold.co/400x300/f39c12/FFFFFF?text=Utensilios+Bamb%C3%BA" }
+            ]
+        };
+
+        const productListEl = document.getElementById('product-list');
+        const cartItemsEl = document.getElementById('cart-items');
+        const cartTotalEl = document.getElementById('cart-total');
+        const checkoutButton = document.getElementById('checkout-button');
+        const emptyCartMessage = document.getElementById('empty-cart-message');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const messageModal = document.getElementById('message-modal');
+
+        // --- Funciones de Utilidad ---
+
+        /**
+         * Formatea un número como moneda argentina (Pesos).
+         * @param {number} amount
+         * @returns {string}
+         */
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-AR', {
+                style: 'currency',
+                currency: 'ARS',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(amount);
+        }
+
+        // --- Lógica del Carrito ---
+
+        /**
+         * Calcula el precio total del carrito.
+         * @returns {number}
+         */
+        function calculateTotal() {
+            let total = 0;
+            DB.PRODUCTS.forEach(product => {
+                if (cart[product.id]) {
+                    total += cart[product.id] * product.precioMayorista;
+                }
+            });
+            return total;
+        }
+
+        /**
+         * Agrega o quita un producto del carrito.
+         * @param {number} productId
+         * @param {number} quantityChange (puede ser 1 o -1)
+         */
+        function updateCart(productId, quantityChange) {
+            productId = parseInt(productId);
+
+            if (!cart[productId]) {
+                cart[productId] = 0;
+            }
+
+            cart[productId] += quantityChange;
+
+            if (cart[productId] <= 0) {
+                delete cart[productId];
+            }
+
+            renderCart();
+        }
+
+        // --- Funciones de Renderizado ---
+
+        /**
+         * Renderiza la lista de productos en la UI.
+         */
+        function renderProducts() {
+            productListEl.innerHTML = '';
+            DB.PRODUCTS.forEach(product => {
+                const cardHtml = `
+                    <div class="product-card bg-white p-4 rounded-xl shadow-md flex flex-col justify-between">
+                        <img src="${product.imagen}" alt="${product.nombre}" onerror="this.onerror=null; this.src='https://placehold.co/400x300/cccccc/333333?text=Producto';" class="w-full h-48 object-cover rounded-lg mb-4">
+                        <h4 class="text-xl font-bold text-gray-800 mb-1">${product.nombre}</h4>
+                        <p class="text-sm text-gray-500 mb-3 flex-grow">${product.descripcion}</p>
+                        <div class="flex items-center justify-between mt-auto">
+                            <span class="text-2xl font-extrabold text-red-600">${formatCurrency(product.precioMayorista)}</span>
+                            <button onclick="updateCart(${product.id}, 1)"
+                                class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 shadow-md">
+                                <i class="fas fa-plus mr-1"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productListEl.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        /**
+         * Renderiza los elementos del carrito y actualiza el total.
+         */
+        function renderCart() {
+            cartItemsEl.innerHTML = '';
+            let hasItems = false;
+
+            DB.PRODUCTS.forEach(product => {
+                const quantity = cart[product.id];
+                if (quantity > 0) {
+                    hasItems = true;
+                    const itemTotal = quantity * product.precioMayorista;
+                    const itemHtml = `
+                        <div class="flex items-center justify-between p-2 border-b border-gray-100 last:border-b-0">
+                            <div class="flex flex-col flex-grow">
+                                <span class="text-sm font-medium text-gray-800">${product.nombre}</span>
+                                <span class="text-xs text-gray-500">${formatCurrency(product.precioMayorista)} x ${quantity}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-base font-semibold text-teal-600">${formatCurrency(itemTotal)}</span>
+                                <button onclick="updateCart(${product.id}, -1)" class="text-red-500 hover:text-red-700 p-1">
+                                    <i class="fas fa-minus-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    cartItemsEl.insertAdjacentHTML('beforeend', itemHtml);
+                }
+            });
+
+            // Actualiza el mensaje de carrito vacío y el botón de checkout
+            if (hasItems) {
+                emptyCartMessage.classList.add('hidden');
+                checkoutButton.disabled = false;
+            } else {
+                emptyCartMessage.classList.remove('hidden');
+                checkoutButton.disabled = true;
+            }
+
+            // Actualiza el total
+            cartTotalEl.textContent = formatCurrency(calculateTotal());
+        }
+
+        // --- Lógica de Checkout a WhatsApp ---
+
+        /**
+         * Genera el mensaje de pedido y redirige al cliente a WhatsApp.
+         */
+        async function checkoutToWhatsApp() {
+            // Deshabilitar botón y mostrar spinner para prevenir doble click
+            checkoutButton.disabled = true;
+            loadingSpinner.classList.remove('hidden');
+
+            const total = calculateTotal();
+            if (total === 0) {
+                loadingSpinner.classList.add('hidden');
+                // Mostrar un mensaje de error simple usando el modal
+                document.getElementById('modal-text').textContent = "El carrito está vacío. Por favor, agrega productos antes de finalizar el pedido.";
+                messageModal.classList.remove('hidden');
+                checkoutButton.disabled = false;
+                return;
+            }
+
+            let message = "¡Hola! Mi pedido mayorista es el siguiente:\n\n";
+
+            DB.PRODUCTS.forEach(product => {
+                const quantity = cart[product.id];
+                if (quantity > 0) {
+                    const itemTotal = quantity * product.precioMayorista;
+                    // Usar un formato simple para el mensaje de texto
+                    message += `${product.nombre} (x${quantity}) - Total: ${formatCurrency(itemTotal)}\n`;
+                }
+            });
+
+            message += "\n--- RESUMEN ---\n";
+            message += `TOTAL DEL PEDIDO: ${formatCurrency(total)}\n`;
+            message += "\nPor favor, coordinar la entrega. Recuerdo que el pago es al recibir conforme.\n¡Muchas gracias!";
+
+            // Codificar el mensaje para la URL de WhatsApp
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${DB.WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+            // Pequeño delay para simular procesamiento (y que se vea el spinner)
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Abrir modal de confirmación
+            document.getElementById('modal-text').textContent = "Serás redirigido a WhatsApp para confirmar el pedido con el resumen de la compra.";
+            messageModal.classList.remove('hidden');
+
+            // Redirigir (luego de un breve momento para que el usuario vea el modal)
+            setTimeout(() => {
+                window.open(whatsappUrl, '_blank');
+                
+                // Restablecer el estado
+                loadingSpinner.classList.add('hidden');
+                checkoutButton.disabled = false;
+
+                // Opcional: limpiar el carrito después de la redirección
+                // clearCart();
+            }, 1000); // 1 segundo de espera
+
+        }
+
+        // --- Inicialización ---
+
+        /**
+         * Inicializa la aplicación al cargar la página.
+         */
+        window.onload = function() {
+            console.log("Tienda Mayorista Inicializada.");
+            renderProducts();
+            renderCart(); // Renderiza el carrito inicialmente vacío
+        };
+    </script>
+</body>
+</html>
