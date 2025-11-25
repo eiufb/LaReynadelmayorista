@@ -108,6 +108,32 @@
                     </div>
                 </div>
 
+                <!-- NUEVA SECCIÓN: OPCIONES DE ENTREGA -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h4 class="text-lg font-bold mb-3 text-gray-700">Opciones de Entrega</h4>
+
+                    <!-- Radio Button: Retiro -->
+                    <div class="mb-2">
+                        <input type="radio" id="pickup" name="delivery_option" value="pickup" checked onchange="toggleDeliveryFields()" class="text-teal-600 focus:ring-teal-500">
+                        <label for="pickup" class="ml-2 text-sm font-medium text-gray-700">Retiro / Punto de Encuentro (VCP y Zonas Aledañas)</label>
+                    </div>
+
+                    <!-- Radio Button: Delivery -->
+                    <div class="mb-4">
+                        <input type="radio" id="delivery" name="delivery_option" value="delivery" onchange="toggleDeliveryFields()" class="text-teal-600 focus:ring-teal-500">
+                        <label for="delivery" class="ml-2 text-sm font-medium text-gray-700">Envío a Domicilio (Delivery VCP GRATIS)</label>
+                    </div>
+
+                    <!-- Campos de Delivery (Inicialmente ocultos) -->
+                    <div id="delivery-fields" class="space-y-3 hidden">
+                        <p class="text-xs text-red-500 font-semibold">Datos necesarios para la entrega:</p>
+                        <input type="text" id="client-name" placeholder="Nombre y Apellido del Receptor" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:border-teal-500 focus:ring-teal-500">
+                        <input type="text" id="delivery-address" placeholder="Dirección de Entrega Completa (Calle, Nro, Piso)" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:border-teal-500 focus:ring-teal-500">
+                        <input type="text" id="delivery-notes" placeholder="Notas adicionales (Color de casa, horario, etc.)" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:border-teal-500 focus:ring-teal-500">
+                    </div>
+                </div>
+                <!-- FIN NUEVA SECCIÓN -->
+
                 <!-- Botón de Finalizar Pedido por WhatsApp -->
                 <button onclick="checkoutToWhatsApp()"
                         id="checkout-button"
@@ -167,6 +193,12 @@
         const emptyCartMessage = document.getElementById('empty-cart-message');
         const loadingSpinner = document.getElementById('loading-spinner');
         const messageModal = document.getElementById('message-modal');
+        // Referencias a los nuevos campos
+        const deliveryFields = document.getElementById('delivery-fields');
+        const clientNameEl = document.getElementById('client-name');
+        const deliveryAddressEl = document.getElementById('delivery-address');
+        const deliveryNotesEl = document.getElementById('delivery-notes');
+
 
         // --- Funciones de Utilidad ---
 
@@ -220,6 +252,28 @@
 
             renderCart();
         }
+
+        // --- Lógica de Entrega (Nueva) ---
+        
+        /**
+         * Maneja la visibilidad de los campos de dirección según la opción seleccionada.
+         */
+        function toggleDeliveryFields() {
+            const deliverySelected = document.getElementById('delivery').checked;
+
+            if (deliverySelected) {
+                deliveryFields.classList.remove('hidden');
+                // Marcar como requerido para una validación simple en JS
+                clientNameEl.setAttribute('required', 'required');
+                deliveryAddressEl.setAttribute('required', 'required');
+            } else {
+                deliveryFields.classList.add('hidden');
+                // Remover el atributo required
+                clientNameEl.removeAttribute('required');
+                deliveryAddressEl.removeAttribute('required');
+            }
+        }
+
 
         // --- Funciones de Renderizado ---
 
@@ -290,7 +344,7 @@
             cartTotalEl.textContent = formatCurrency(calculateTotal());
         }
 
-        // --- Lógica de Checkout a WhatsApp ---
+        // --- Lógica de Checkout a WhatsApp (Modificada) ---
 
         /**
          * Genera el mensaje de pedido y redirige al cliente a WhatsApp.
@@ -309,34 +363,63 @@
                 checkoutButton.disabled = false;
                 return;
             }
+            
+            // --- LÓGICA DE ENTREGA ---
+            const isDelivery = document.getElementById('delivery').checked;
+
+            let deliveryMethod = "Retiro / Punto de Encuentro";
+            let deliveryDetails = "El cliente coordinará el retiro en punto de encuentro o local.";
+            
+            if (isDelivery) {
+                // Validación simple para Delivery
+                if (!clientNameEl.value.trim() || !deliveryAddressEl.value.trim()) {
+                    loadingSpinner.classList.add('hidden');
+                    document.getElementById('modal-text').textContent = "¡IMPORTANTE! Para Envío a Domicilio, debe completar su Nombre y Dirección.";
+                    messageModal.classList.remove('hidden');
+                    checkoutButton.disabled = false;
+                    return;
+                }
+
+                deliveryMethod = "ENVÍO A DOMICILIO (DELIVERY)";
+                deliveryDetails = `Receptor: ${clientNameEl.value.trim()}\n`;
+                deliveryDetails += `Dirección: ${deliveryAddressEl.value.trim()}\n`;
+                if (deliveryNotesEl.value.trim()) {
+                    deliveryDetails += `Notas/Ref.: ${deliveryNotesEl.value.trim()}\n`;
+                }
+            }
+            // --- FIN LÓGICA DE ENTREGA ---
+
 
             let message = "¡Hola! Mi pedido mayorista es el siguiente:\n\n";
 
+            // Listado de productos
             DB.PRODUCTS.forEach(product => {
                 const quantity = cart[product.id];
                 if (quantity > 0) {
                     const itemTotal = quantity * product.precioMayorista;
-                    // Usar un formato simple para el mensaje de texto
                     message += `${product.nombre} (x${quantity}) - Total: ${formatCurrency(itemTotal)}\n`;
                 }
             });
 
+            // Resumen final con detalles de entrega
             message += "\n--- RESUMEN ---\n";
             message += `TOTAL DEL PEDIDO: ${formatCurrency(total)}\n`;
+            message += `MÉTODO DE ENTREGA: ${deliveryMethod}\n`;
+            message += `DETALLES DE ENTREGA:\n${deliveryDetails}\n`;
             message += "\nPor favor, coordinar la entrega. Recuerdo que el pago es al recibir conforme.\n¡Muchas gracias!";
 
             // Codificar el mensaje para la URL de WhatsApp
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${DB.WHATSAPP_NUMBER}?text=${encodedMessage}`;
 
-            // Pequeño delay para simular procesamiento (y que se vea el spinner)
+            // Pequeño delay para simular procesamiento
             await new Promise(resolve => setTimeout(resolve, 500));
 
             // Abrir modal de confirmación
             document.getElementById('modal-text').textContent = "Serás redirigido a WhatsApp para confirmar el pedido con el resumen de la compra.";
             messageModal.classList.remove('hidden');
 
-            // Redirigir (luego de un breve momento para que el usuario vea el modal)
+            // Redirigir
             setTimeout(() => {
                 window.open(whatsappUrl, '_blank');
                 
@@ -359,6 +442,7 @@
             console.log("Tienda Mayorista Inicializada.");
             renderProducts();
             renderCart(); // Renderiza el carrito inicialmente vacío
+            toggleDeliveryFields(); // Inicializa la visibilidad de los campos de entrega
         };
     </script>
 </body>
